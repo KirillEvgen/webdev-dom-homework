@@ -64,22 +64,29 @@
   </body>
 
   <script>
-    "use strict";
-    const name = document.querySelector(".add-form-name");
-    const text = document.querySelector(".add-form-text");
-    const button = document.querySelector(".add-form-button");
-    const comments = document.querySelector(".comments");
-  button.addEventListener("click", () => {
-  if (!name.value || !text.value) {
-    return;
-  }
+"use strict";
+const name = document.querySelector(".add-form-name");
+const text = document.querySelector(".add-form-text");
+const button = document.querySelector(".add-form-button");
+const comments = document.querySelector(".comments");
 
-  const newComment = document.createElement("div");
+button.addEventListener("click", () => {
+  if (!name.value || !text.value) return;
+
+  const date = new Date().toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).replace(',', '');
+
+  const newComment = document.createElement("li");
   newComment.classList.add("comment");
   newComment.innerHTML = `
     <div class="comment-header">
-      <div>${name.value}</div>
-      <div>${new Date().toLocaleString()}</div>
+      <div class="comment-author">${name.value}</div>
+      <div class="comment-date">${date}</div>
     </div>
     <div class="comment-body">
       <div class="comment-text">${text.value}</div>
@@ -91,8 +98,8 @@
       </div>
     </div>
   `;
-  comments.appendChild(newComment);
 
+ comments.appendChild(newComment);
   name.value = "";
   text.value = "";
 });
