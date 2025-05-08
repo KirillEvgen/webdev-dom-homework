@@ -70,6 +70,29 @@ const text = document.querySelector(".add-form-text");
 const button = document.querySelector(".add-form-button");
 const comments = document.querySelector(".comments");
 
+function initLikeButtons() {
+  const likeButtons = document.querySelectorAll(".like-button");
+
+  likeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const counter = button.previousElementSibling;
+      let likes = parseInt(counter.textContent);
+
+      if (button.classList.contains("-active-like")) {
+        likes--;
+        button.classList.remove("-active-like");
+      } else {
+        likes++;
+        button.classList.add("-active-like");
+      }
+
+      counter.textContent = likes;
+    });
+  });
+}
+
+initLikeButtons();
+
 button.addEventListener("click", () => {
   if (!name.value || !text.value) return;
 
@@ -99,9 +122,12 @@ button.addEventListener("click", () => {
     </div>
   `;
 
- comments.appendChild(newComment);
+  comments.appendChild(newComment);
   name.value = "";
   text.value = "";
+
+  initLikeButtons(); 
 });
+
   </script>
-</html>
+  </html>
