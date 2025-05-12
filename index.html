@@ -70,6 +70,10 @@ const nameInput = document.querySelector(".add-form-name");
     const button = document.querySelector(".add-form-button");
     const commentsList = document.querySelector(".comments");
 
+    const sanitizeHTML = (value) => {
+      return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    };
+
     let commentsData = [
       {
         name: "Глеб Фокин",
@@ -88,11 +92,12 @@ const nameInput = document.querySelector(".add-form-name");
     ];
 
     function renderComments() {
-      commentsList.innerHTML = ""; // очищаем всё
+      commentsList.innerHTML = ""; 
 
       commentsData.forEach((comment, index) => {
         const commentEl = document.createElement("li");
         commentEl.classList.add("comment");
+        commentEl.dataset.index = index;
 
         commentEl.innerHTML = `
           <div class="comment-header">
@@ -116,7 +121,8 @@ const nameInput = document.querySelector(".add-form-name");
       });
 
       document.querySelectorAll(".like-button").forEach(button => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
           const index = button.dataset.index;
           const comment = commentsData[index];
 
@@ -126,6 +132,15 @@ const nameInput = document.querySelector(".add-form-name");
           renderComments(); 
         });
       });
+      const commentsElements = document.querySelectorAll(".comment");
+      for (const commentElement of commentsElements) {
+       commentElement.addEventListener("click", (event) => {
+      const index = commentElement.dataset.index;
+      const currentComment = commentsData[index];
+      textInput.value = `${currentComment.name}: ${currentComment.text}`;
+  });
+}
+
     }
 
     button.addEventListener("click", () => {
@@ -140,9 +155,11 @@ const nameInput = document.querySelector(".add-form-name");
       }).replace(',', '');
 
       commentsData.push({
+        name: sanitizeHTML(nameInput.value),
         name: nameInput.value,
         date: date,
         text: textInput.value,
+        text: sanitizeHTML(textInput.value),
         likes: 0,
         isLiked: false
       });
