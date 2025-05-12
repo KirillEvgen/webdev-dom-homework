@@ -142,10 +142,9 @@ const nameInput = document.querySelector(".add-form-name");
 }
 
     }
-
+    
     button.addEventListener("click", () => {
       if (!nameInput.value.trim() || !textInput.value.trim()) return;
-
       const date = new Date().toLocaleString('ru-RU', {
         day: '2-digit',
         month: '2-digit',
