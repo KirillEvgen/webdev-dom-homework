@@ -70,7 +70,10 @@ const nameInput = document.querySelector(".add-form-name");
     const button = document.querySelector(".add-form-button");
     const commentsList = document.querySelector(".comments");
 
-    const sanitizeHTML = (value) => {
+    const sanitizeName = (value) => {
+      return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    };
+    const sanitizeText = (value) => {
       return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     };
 
@@ -154,11 +157,9 @@ const nameInput = document.querySelector(".add-form-name");
       }).replace(',', '');
 
       commentsData.push({
-        name: sanitizeHTML(nameInput.value),
-        name: nameInput.value,
+        name: sanitizeName(nameInput.value),
         date: date,
-        text: textInput.value,
-        text: sanitizeHTML(textInput.value),
+        text: sanitizeText(textInput.value),
         likes: 0,
         isLiked: false
       });
