@@ -1,14 +1,14 @@
 import { commentsData } from './data.js'
 
 export function renderComments(commentsList, textInput) {
-  commentsList.innerHTML = ''
+    commentsList.innerHTML = ''
 
-  commentsData.forEach((comment, index) => {
-    const commentEl = document.createElement('li')
-    commentEl.classList.add('comment')
-    commentEl.dataset.index = index
+    commentsData.forEach((comment, index) => {
+        const commentEl = document.createElement('li')
+        commentEl.classList.add('comment')
+        commentEl.dataset.index = index
 
-    commentEl.innerHTML = `
+        commentEl.innerHTML = `
       <div class="comment-header">
         <div class="comment-author">${comment.name}</div>
         <div class="comment-date">${comment.date}</div>
@@ -25,27 +25,27 @@ export function renderComments(commentsList, textInput) {
       </div>
     `
 
-    commentsList.appendChild(commentEl)
-  })
-
-  commentsList.querySelectorAll('.like-button').forEach((button) => {
-    button.addEventListener('click', (event) => {
-      event.stopPropagation()
-      const index = button.dataset.index
-      const comment = commentsData[index]
-
-      comment.isLiked = !comment.isLiked
-      comment.likes += comment.isLiked ? 1 : -1
-
-      renderComments(commentsList, textInput)
+        commentsList.appendChild(commentEl)
     })
-  })
 
-  commentsList.querySelectorAll('.comment').forEach((commentElement) => {
-    commentElement.addEventListener('click', () => {
-      const index = commentElement.dataset.index
-      const currentComment = commentsData[index]
-      textInput.value = `${currentComment.name}: ${currentComment.text}`
+    commentsList.querySelectorAll('.like-button').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation()
+            const index = button.dataset.index
+            const comment = commentsData[index]
+
+            comment.isLiked = !comment.isLiked
+            comment.likes += comment.isLiked ? 1 : -1
+
+            renderComments(commentsList, textInput)
+        })
     })
-  })
+
+    commentsList.querySelectorAll('.comment').forEach((commentElement) => {
+        commentElement.addEventListener('click', () => {
+            const index = commentElement.dataset.index
+            const currentComment = commentsData[index]
+            textInput.value = `${currentComment.name}: ${currentComment.text}`
+        })
+    })
 }
