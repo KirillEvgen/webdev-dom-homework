@@ -1,4 +1,4 @@
-export let commentsData = [
+export const commentsData = [
     {
         name: 'Глеб Фокин',
         date: '12.02.22 12:18',

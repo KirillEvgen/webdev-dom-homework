@@ -1,6 +1,6 @@
 import { commentsData } from './data.js'
 
-export function renderComments(commentsList, textInput) {
+export function renderComments(commentsList, textInput, rerender) {
     commentsList.innerHTML = ''
 
     commentsData.forEach((comment, index) => {
@@ -19,8 +19,7 @@ export function renderComments(commentsList, textInput) {
       <div class="comment-footer">
         <div class="likes">
           <span class="likes-counter">${comment.likes}</span>
-          <button class="like-button ${comment.isLiked ? '-active-like' : ''}" data-index="${index}">
-          </button>
+          <button class="like-button ${comment.isLiked ? '-active-like' : ''}" data-index="${index}"></button>
         </div>
       </div>
     `
@@ -33,19 +32,17 @@ export function renderComments(commentsList, textInput) {
             event.stopPropagation()
             const index = button.dataset.index
             const comment = commentsData[index]
-
             comment.isLiked = !comment.isLiked
             comment.likes += comment.isLiked ? 1 : -1
-
-            renderComments(commentsList, textInput)
+            rerender()
         })
     })
 
     commentsList.querySelectorAll('.comment').forEach((commentElement) => {
         commentElement.addEventListener('click', () => {
             const index = commentElement.dataset.index
-            const currentComment = commentsData[index]
-            textInput.value = `${currentComment.name}: ${currentComment.text}`
+            const comment = commentsData[index]
+            textInput.value = `${comment.name}: ${comment.text}`
         })
     })
 }

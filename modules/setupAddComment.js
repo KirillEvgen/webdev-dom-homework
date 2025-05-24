@@ -1,10 +1,11 @@
 import { commentsData } from './data.js'
-import { sanitizeName, sanitizeText } from './sanitize.js'
-import { renderComments } from './render.js'
+import { sanitize } from './sanitize.js'
 
-export function setupAddComment(nameInput, textInput, button, commentsList) {
+export function setupAddComment(nameInput, textInput, button, rerender) {
     button.addEventListener('click', () => {
-        if (!nameInput.value.trim() || !textInput.value.trim()) return
+        const name = nameInput.value.trim()
+        const text = textInput.value.trim()
+        if (!name || !text) return
 
         const date = new Date()
             .toLocaleString('ru-RU', {
@@ -17,16 +18,15 @@ export function setupAddComment(nameInput, textInput, button, commentsList) {
             .replace(',', '')
 
         commentsData.push({
-            name: sanitizeName(nameInput.value),
-            date: date,
-            text: sanitizeText(textInput.value),
+            name: sanitize(name),
+            text: sanitize(text),
+            date,
             likes: 0,
             isLiked: false,
         })
 
         nameInput.value = ''
         textInput.value = ''
-
-        renderComments(commentsList, textInput)
+        rerender()
     })
 }
