@@ -1,4 +1,6 @@
-import { commentsData } from './data.js'
+import { postComment } from './api.js'
+import { commentsData, updateComments } from './data.js'
+import { renderComments } from './renderComments.js'
 import { sanitize } from './sanitize.js'
 
 export function setupAddComment(nameInput, textInput, button, rerender) {
@@ -25,8 +27,11 @@ export function setupAddComment(nameInput, textInput, button, rerender) {
             isLiked: false,
         })
 
-        nameInput.value = ''
-        textInput.value = ''
-        rerender()
+        postComment(sanitize(name), sanitize(text)).then((data) => {
+            updateComments(data)
+            renderComments()
+            nameInput.value = ''
+            textInput.value = ''
+        })
     })
 }

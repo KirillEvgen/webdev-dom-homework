@@ -25,7 +25,7 @@ export function renderComments(commentsList, textInput, rerender) {
     `
 
         commentsList.appendChild(commentEl)
-    })
+})
 
     commentsList.querySelectorAll('.like-button').forEach((button) => {
         button.addEventListener('click', (event) => {

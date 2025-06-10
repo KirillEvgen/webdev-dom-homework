@@ -14,3 +14,7 @@ export const commentsData = [
         isLiked: true,
     },
 ]
+
+export const updateComments = (newComments) => {
+    comments = newComments
+}
