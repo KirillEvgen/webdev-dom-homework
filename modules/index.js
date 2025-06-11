@@ -1,9 +1,11 @@
 import { fetchComments } from './api.js'
 import { renderComments } from './renderComments.js'
 import { setupAddComment } from './setupAddComment.js'
+import { updateComments } from './data.js'
 
 fetchComments().then(data => {
-    renderComments()
+    updateComments(data) 
+    rerender() 
 })
 
 const nameInput = document.querySelector('.add-form-name')

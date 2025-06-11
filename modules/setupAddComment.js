@@ -1,6 +1,5 @@
 import { postComment } from './api.js'
-import { commentsData, updateComments } from './data.js'
-import { renderComments } from './renderComments.js'
+import { commentsData } from './data.js'
 import { sanitize } from './sanitize.js'
 
 export function setupAddComment(nameInput, textInput, button, rerender) {
@@ -9,27 +8,24 @@ export function setupAddComment(nameInput, textInput, button, rerender) {
         const text = textInput.value.trim()
         if (!name || !text) return
 
-        const date = new Date()
-            .toLocaleString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
+        const now = new Date().toISOString()
+        const key = `${name}_${text}`
+
+        // Сохраняем дату в localStorage
+        const storedDates = JSON.parse(localStorage.getItem('commentDates') || '{}')
+        storedDates[key] = now
+        localStorage.setItem('commentDates', JSON.stringify(storedDates))
+
+        postComment(sanitize(name), sanitize(text)).then(() => {
+            commentsData.push({
+                name: sanitize(name),
+                text: sanitize(text),
+                created_at: now,
+                likes: 0,
+                isLiked: false,
             })
-            .replace(',', '')
 
-        commentsData.push({
-            name: sanitize(name),
-            text: sanitize(text),
-            date,
-            likes: 0,
-            isLiked: false,
-        })
-
-        postComment(sanitize(name), sanitize(text)).then((data) => {
-            updateComments(data)
-            renderComments()
+            rerender()
             nameInput.value = ''
             textInput.value = ''
         })
