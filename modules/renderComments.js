@@ -4,6 +4,16 @@ export function renderComments(commentsList, textInput, rerender) {
     commentsList.innerHTML = ''
 
     commentsData.forEach((comment, index) => {
+        const formattedDate = comment.created_at
+            ? new Date(comment.created_at).toLocaleString('ru-RU', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+              }).replace(',', '')
+            : ''
+
         const commentEl = document.createElement('li')
         commentEl.classList.add('comment')
         commentEl.dataset.index = index
@@ -11,7 +21,7 @@ export function renderComments(commentsList, textInput, rerender) {
         commentEl.innerHTML = `
       <div class="comment-header">
         <div class="comment-author">${comment.name}</div>
-        <div class="comment-date">${comment.date}</div>
+        <div class="comment-date">${formattedDate}</div>
       </div>
       <div class="comment-body">
         <div class="comment-text">${comment.text}</div>

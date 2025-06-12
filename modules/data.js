@@ -1,16 +1,27 @@
-export const commentsData = [
-    {
-        name: 'Глеб Фокин',
-        date: '12.02.22 12:18',
-        text: 'Это будет первый комментарий на этой странице',
-        likes: 3,
-        isLiked: false,
-    },
-    {
-        name: 'Варвара Н.',
-        date: '13.02.22 19:22',
-        text: 'Мне нравится как оформлена эта страница! ❤',
-        likes: 75,
-        isLiked: true,
-    },
-]
+export const commentsData = []
+
+export const updateComments = (newComments) => {
+    commentsData.length = 0
+
+    const storedDates = JSON.parse(localStorage.getItem('commentDates') || '{}')
+    let updated = false
+
+    newComments.forEach((comment) => {
+        const key = `${comment.name}_${comment.text}`
+
+        
+        if (!storedDates[key]) {
+            storedDates[key] = new Date().toISOString()
+            updated = true
+        }
+
+        commentsData.push({
+            ...comment,
+            created_at: storedDates[key],
+        })
+    })
+
+    if (updated) {
+        localStorage.setItem('commentDates', JSON.stringify(storedDates))
+    }
+}
