@@ -10,6 +10,7 @@ export const fetchComments = () => {
                     text: comment.text,
                     likes: comment.likes,
                     isLiked: comment.is_liked,
+                    created_at: comment.date,
                 }
             })
             return appComments

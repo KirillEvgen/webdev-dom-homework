@@ -11,7 +11,6 @@ export function setupAddComment(nameInput, textInput, button, rerender) {
         const now = new Date().toISOString()
         const key = `${name}_${text}`
 
-        // Сохраняем дату в localStorage
         const storedDates = JSON.parse(localStorage.getItem('commentDates') || '{}')
         storedDates[key] = now
         localStorage.setItem('commentDates', JSON.stringify(storedDates))
