@@ -9,7 +9,6 @@ export const updateComments = (newComments) => {
     newComments.forEach((comment) => {
         const key = `${comment.name}_${comment.text}`
 
-        
         if (!storedDates[key]) {
             storedDates[key] = new Date().toISOString()
             updated = true

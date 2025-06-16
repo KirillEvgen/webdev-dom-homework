@@ -11,22 +11,35 @@ export function setupAddComment(nameInput, textInput, button, rerender) {
         const now = new Date().toISOString()
         const key = `${name}_${text}`
 
-        const storedDates = JSON.parse(localStorage.getItem('commentDates') || '{}')
+        const storedDates = JSON.parse(
+            localStorage.getItem('commentDates') || '{}',
+        )
         storedDates[key] = now
         localStorage.setItem('commentDates', JSON.stringify(storedDates))
 
-        postComment(sanitize(name), sanitize(text)).then(() => {
-            commentsData.push({
-                name: sanitize(name),
-                text: sanitize(text),
-                created_at: now,
-                likes: 0,
-                isLiked: false,
-            })
+        document.querySelector('.form-loading').style.display = 'block'
+        document.querySelector('.add-form').style.display = 'none'
 
-            rerender()
-            nameInput.value = ''
-            textInput.value = ''
-        })
+        postComment(sanitize(name), sanitize(text))
+            .then(() => {
+                document.querySelector('.form-loading').style.display = 'none'
+                document.querySelector('.add-form').style.display = 'flex'
+
+                commentsData.push({
+                    name: sanitize(name),
+                    text: sanitize(text),
+                    created_at: now,
+                    likes: 0,
+                    isLiked: false,
+                })
+
+                rerender()
+                nameInput.value = ''
+                textInput.value = ''
+            })
+            .catch((error) => {
+                alert('Небольшие трудности. Загружаю комметарии.')
+                console.error('Ошибка при отправке комментария:', error)
+            })
     })
 }
