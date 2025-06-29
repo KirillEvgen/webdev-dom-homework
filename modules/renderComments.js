@@ -1,24 +1,25 @@
 import { commentsData } from './data.js'
+import { getToken, getUserName } from './api.js'
 
 export function renderComments(commentsList, textInput, rerender) {
-    commentsList.innerHTML = ''
+  commentsList.innerHTML = ''
 
-    commentsData.forEach((comment, index) => {
-        const formattedDate = comment.created_at
-            ? new Date(comment.created_at).toLocaleString('ru-RU', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-              }).replace(',', '')
-            : ''
+  commentsData.forEach((comment, index) => {
+    const formattedDate = new Date(comment.created_at)
+      .toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .replace(',', '')
 
-        const commentEl = document.createElement('li')
-        commentEl.classList.add('comment')
-        commentEl.dataset.index = index
+    const commentEl = document.createElement('li')
+    commentEl.classList.add('comment')
+    commentEl.dataset.index = index
 
-        commentEl.innerHTML = `
+    commentEl.innerHTML = `
       <div class="comment-header">
         <div class="comment-author">${comment.name}</div>
         <div class="comment-date">${formattedDate}</div>
@@ -34,25 +35,70 @@ export function renderComments(commentsList, textInput, rerender) {
       </div>
     `
 
-        commentsList.appendChild(commentEl)
-    })
+    commentsList.appendChild(commentEl)
+  })
 
-    commentsList.querySelectorAll('.like-button').forEach((button) => {
-        button.addEventListener('click', (event) => {
-            event.stopPropagation()
-            const index = button.dataset.index
-            const comment = commentsData[index]
-            comment.isLiked = !comment.isLiked
-            comment.likes += comment.isLiked ? 1 : -1
-            rerender()
-        })
+  commentsList.querySelectorAll('.like-button').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.stopPropagation()
+      const index = button.dataset.index
+      const comment = commentsData[index]
+      comment.isLiked = !comment.isLiked
+      comment.likes += comment.isLiked ? 1 : -1
+      rerender()
     })
+  })
 
-    commentsList.querySelectorAll('.comment').forEach((commentElement) => {
-        commentElement.addEventListener('click', () => {
-            const index = commentElement.dataset.index
-            const comment = commentsData[index]
-            textInput.value = `${comment.name}: ${comment.text}`
-        })
+
+  const oldForm = document.querySelector('.add-form')
+  if (oldForm) {
+    oldForm.remove()
+  }
+
+
+  const formHtml = getToken()
+    ? `
+      <div class="add-form">
+        <input
+          type="text"
+          class="add-form-name"
+          value="${getUserName()}"
+          readonly
+        />
+        <textarea
+          class="add-form-text"
+          placeholder="Введите ваш комментарий"
+          rows="4"
+        ></textarea>
+        <div class="add-form-row">
+          <button class="add-form-button">Написать</button>
+        </div>
+        <div class="form-loading" style="display: none; margin-top: 20px;">
+          Комментарий добавляется...
+        </div>
+      </div>
+    `
+    : `
+      <div style="margin-top: 20px; text-align: center;">
+        Чтобы добавить комментарий, <a href="#">авторизуйтесь</a>.
+      </div>
+    `
+
+ 
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = formHtml
+  commentsList.parentNode.appendChild(wrapper.firstElementChild)
+
+  const commentItems = commentsList.querySelectorAll('.comment')
+  const formInput = document.querySelector('.add-form-text')
+
+  commentItems.forEach((commentElement) => {
+    commentElement.addEventListener('click', () => {
+      const index = commentElement.dataset.index
+      const comment = commentsData[index]
+      if (formInput) {
+        formInput.value = `${comment.name}: ${comment.text}`
+      }
     })
+  })
 }

@@ -2,25 +2,34 @@ import { fetchComments } from './api.js'
 import { renderComments } from './renderComments.js'
 import { setupAddComment } from './setupAddComment.js'
 import { updateComments } from './data.js'
+import { getToken } from './api.js'
+import { renderLogin } from './login.js'
 
-const nameInput = document.querySelector('.add-form-name')
-const textInput = document.querySelector('.add-form-text')
-const button = document.querySelector('.add-form-button')
-const commentsList = document.querySelector('.comments')
+const container = document.querySelector('.container')
 
-const rerender = () => renderComments(commentsList, textInput, rerender)
+export function renderApp() {
+    container.innerHTML = 'Загрузка...'
 
-commentsList.innerHTML = 'Подождите, комментарии загружаются...'
+    fetchComments()
+        .then((data) => {
+            updateComments(data)
+            renderComments(container, rerender)
+            if (getToken()) {
+                const nameInput = document.querySelector('.add-form-name')
+                const textInput = document.querySelector('.add-form-text')
+                const button = document.querySelector('.add-form-button')
+                setupAddComment(nameInput, textInput, button, rerender)
+            }
+        })
+        .catch(() => {
+            container.innerHTML = 'Ошибка загрузки комментариев'
+        })
+}
 
-fetchComments()
-    .then((data) => {
-        updateComments(data)
-        rerender()
-    })
-    .catch((error) => {
-        commentsList.innerHTML = 'Ошибка загрузки комментариев. Попробуйте позже.'
-        console.error('Ошибка при загрузке комментариев:', error)
-    })
+const rerender = () => renderApp()
 
-setupAddComment(nameInput, textInput, button, rerender)
-
+if (!getToken()) {
+    renderLogin(container)
+} else {
+    renderApp()
+}
