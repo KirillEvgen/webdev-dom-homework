@@ -2,25 +2,44 @@ import { fetchComments } from './api.js'
 import { renderComments } from './renderComments.js'
 import { setupAddComment } from './setupAddComment.js'
 import { updateComments } from './data.js'
+import { getToken } from './api.js'
+import { renderLogin } from './login.js'
 
-const nameInput = document.querySelector('.add-form-name')
-const textInput = document.querySelector('.add-form-text')
-const button = document.querySelector('.add-form-button')
-const commentsList = document.querySelector('.comments')
+const container = document.querySelector('.container')
 
-const rerender = () => renderComments(commentsList, textInput, rerender)
+export function renderApp() {
+    let commentsList = document.querySelector('.comments')
 
-commentsList.innerHTML = 'Подождите, комментарии загружаются...'
+    if (!commentsList) {
+        commentsList = document.createElement('ul')
+        commentsList.classList.add('comments')
+        container.innerHTML = ''
+        container.appendChild(commentsList)
+    }
 
-fetchComments()
-    .then((data) => {
-        updateComments(data)
-        rerender()
-    })
-    .catch((error) => {
-        commentsList.innerHTML = 'Ошибка загрузки комментариев. Попробуйте позже.'
-        console.error('Ошибка при загрузке комментариев:', error)
-    })
+    fetchComments()
+        .then((data) => {
+            if (!getToken()) {
+                updateComments(data)
+                renderComments(commentsList, null, rerender)
+                return
+            }
 
-setupAddComment(nameInput, textInput, button, rerender)
+            
+            updateComments(data)
+            renderComments(commentsList, null, rerender)
 
+            const nameInput = document.querySelector('.add-form-name')
+            const textInput = document.querySelector('.add-form-text')
+            const button = document.querySelector('.add-form-button')
+            setupAddComment(nameInput, textInput, button, rerender)
+        })
+        .catch((error) => {
+            console.error('Ошибка при загрузке:', error)
+            container.innerHTML = 'Ошибка загрузки комментариев'
+        })
+}
+
+const rerender = () => renderApp()
+
+renderApp()

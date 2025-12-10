@@ -1,6 +1,7 @@
-import { postComment } from './api.js'
-import { commentsData } from './data.js'
+import { postComment, fetchComments } from './api.js'
+import { updateComments } from './data.js'
 import { sanitize } from './sanitize.js'
+import { renderComments } from './renderComments.js'
 
 export function setupAddComment(nameInput, textInput, button, rerender) {
     button.addEventListener('click', () => {
@@ -12,44 +13,27 @@ export function setupAddComment(nameInput, textInput, button, rerender) {
             return
         }
 
-        document.querySelector('.form-loading').style.display = 'block'
-        document.querySelector('.add-form').style.display = 'none'
+        const formLoading = document.querySelector('.form-loading')
+        const addForm = document.querySelector('.add-form')
+        if (!formLoading || !addForm) return
+
+        formLoading.style.display = 'block'
+        addForm.style.display = 'none'
 
         postComment(sanitize(name), sanitize(text))
             .then((response) => {
-                if (response.status === 400) {
-                    throw new Error('validation')
-                }
+                if (response.status === 400) throw new Error('validation')
+                if (response.status >= 500) throw new Error('server')
+                if (!response.ok) throw new Error('unknown')
 
-                if (response.status >= 500) {
-                    throw new Error('server')
-                }
+                return fetchComments()
+            })
+            .then((data) => {
+                updateComments(data)
 
-                if (!response.ok) {
-                    throw new Error('unknown')
-                }
+                const commentsList = document.querySelector('.comments')
+                renderComments(commentsList, null, rerender)
 
-                const now = new Date().toISOString()
-                const key = `${name}_${text}`
-
-                const storedDates = JSON.parse(
-                    localStorage.getItem('commentDates') || '{}',
-                )
-                storedDates[key] = now
-                localStorage.setItem(
-                    'commentDates',
-                    JSON.stringify(storedDates),
-                )
-
-                commentsData.push({
-                    name: sanitize(name),
-                    text: sanitize(text),
-                    created_at: now,
-                    likes: 0,
-                    isLiked: false,
-                })
-
-                rerender()
                 nameInput.value = ''
                 textInput.value = ''
             })
@@ -67,8 +51,8 @@ export function setupAddComment(nameInput, textInput, button, rerender) {
                 console.error('Ошибка при отправке комментария:', error)
             })
             .finally(() => {
-                document.querySelector('.form-loading').style.display = 'none'
-                document.querySelector('.add-form').style.display = 'flex'
+                formLoading.style.display = 'none'
+                addForm.style.display = 'flex'
             })
     })
 }
